@@ -16,7 +16,6 @@ The project combines live video, ambient audio, weather monitoring, and AI-power
 
 ## Hardware
 
-- Raspberry Pi
 - Outdoor IP Cameras
 - USB Microphone
 - Weather Station
