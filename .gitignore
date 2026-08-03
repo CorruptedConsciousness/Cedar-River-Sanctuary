@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Live sanctuary data
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Generated data and logs
+data/exports/
+data/temp/
+logs/
+
+# Secrets
+.env
