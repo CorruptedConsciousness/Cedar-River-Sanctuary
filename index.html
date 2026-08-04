@@ -15,10 +15,13 @@
     :root {
       --background: #09100d;
       --panel: rgba(15, 28, 22, 0.88);
+      --panel-light: rgba(25, 43, 34, 0.9);
       --text: #f2f5f1;
       --muted: #b8c5bc;
       --accent: #8ebf78;
       --border: rgba(255, 255, 255, 0.13);
+      --warning: #ffd166;
+      --danger: #ff8a80;
     }
 
     * {
@@ -131,7 +134,7 @@
       font-size: 2rem;
     }
 
-    .section p {
+    .section-description {
       max-width: 760px;
       color: var(--muted);
       font-size: 1.05rem;
@@ -158,7 +161,185 @@
 
     .feature p {
       margin-bottom: 0;
+      color: var(--muted);
       font-size: 0.98rem;
+      line-height: 1.8;
+    }
+
+    /* Weather */
+
+    .weather-loading,
+    .weather-error {
+      margin-top: 28px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      color: var(--muted);
+    }
+
+    .weather-error {
+      color: var(--danger);
+    }
+
+    .weather-dashboard[hidden],
+    .weather-error[hidden] {
+      display: none;
+    }
+
+    .current-weather {
+      display: grid;
+      grid-template-columns: minmax(250px, 1.2fr) 2fr;
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .current-summary,
+    .weather-details {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel);
+    }
+
+    .current-summary {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 28px;
+    }
+
+    .weather-icon {
+      width: 96px;
+      height: 96px;
+      flex: 0 0 auto;
+      border-radius: 16px;
+      object-fit: cover;
+      background: var(--panel-light);
+    }
+
+    .current-temperature {
+      margin: 0;
+      font-size: clamp(3rem, 7vw, 5rem);
+      line-height: 1;
+    }
+
+    .current-condition {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .weather-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      overflow: hidden;
+    }
+
+    .weather-stat {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .weather-stat:nth-child(odd) {
+      border-right: 1px solid var(--border);
+    }
+
+    .weather-stat:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .weather-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .weather-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .alerts {
+      margin-top: 22px;
+    }
+
+    .alert-card {
+      margin-top: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255, 209, 102, 0.45);
+      border-radius: 16px;
+      background: rgba(94, 67, 14, 0.3);
+    }
+
+    .alert-card h3 {
+      margin: 0 0 10px;
+      color: var(--warning);
+    }
+
+    .alert-card p {
+      margin: 8px 0 0;
+      color: var(--text);
+      font-size: 0.96rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .forecast-heading {
+      margin: 38px 0 18px;
+      font-size: 1.35rem;
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(125px, 1fr));
+      gap: 12px;
+    }
+
+    .forecast-card {
+      padding: 18px 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel);
+      text-align: center;
+    }
+
+    .forecast-card h3 {
+      min-height: 40px;
+      margin: 0;
+      font-size: 0.98rem;
+    }
+
+    .forecast-card img {
+      width: 70px;
+      height: 70px;
+      margin: 12px auto;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--panel-light);
+    }
+
+    .forecast-temperature {
+      margin: 0;
+      font-size: 1.45rem;
+      font-weight: 700;
+    }
+
+    .forecast-condition {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .weather-updated {
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
     }
 
     footer {
@@ -172,19 +353,56 @@
       color: var(--accent);
     }
 
+    @media (max-width: 900px) {
+      .forecast-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
     @media (max-width: 750px) {
       header {
         align-items: flex-start;
         flex-direction: column;
       }
 
-      .features {
+      .features,
+      .current-weather {
         grid-template-columns: 1fr;
       }
 
       .hero {
         min-height: 60vh;
         padding: 60px 0;
+      }
+
+      .forecast-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 450px) {
+      .current-summary {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .weather-details {
+        grid-template-columns: 1fr;
+      }
+
+      .weather-stat,
+      .weather-stat:nth-child(odd),
+      .weather-stat:nth-last-child(-n + 2) {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .weather-stat:last-child {
+        border-bottom: 0;
+      }
+
+      .forecast-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -197,6 +415,7 @@
 
       <nav aria-label="Main navigation">
         <a href="#about">About</a>
+        <a href="#weather">Weather</a>
         <a href="#project">Project</a>
         <a href="https://github.com/CorruptedConsciousness/Cedar-River-Sanctuary">
           GitHub
@@ -216,19 +435,98 @@
             monitoring station near Michigan's Cedar River.
           </p>
 
-          <div class="status">Live cameras and field data coming soon</div>
+          <div class="status">
+            Regional weather data now online
+          </div>
         </div>
       </section>
 
       <section class="section" id="about">
         <h2>Observing the Cedar River corridor</h2>
 
-        <p>
+        <p class="section-description">
           Cedar River Sanctuary is a year-round wildlife monitoring project
           documenting the animals, weather, and natural soundscape surrounding
           a forested property near the Cedar River in Buckeye Township,
           Michigan.
         </p>
+      </section>
+
+      <section class="section" id="weather">
+        <div class="eyebrow">Regional context</div>
+        <h2>National Weather Service forecast</h2>
+
+        <p class="section-description">
+          Forecasts and active alerts are retrieved from the National Weather
+          Service and processed by the Cedar River Sanctuary data system.
+          On-site measurements will be added when the local weather station
+          becomes operational.
+        </p>
+
+        <div class="weather-loading" id="weather-loading">
+          Loading the latest weather data…
+        </div>
+
+        <div class="weather-error" id="weather-error" hidden>
+          Weather information is temporarily unavailable.
+        </div>
+
+        <div class="weather-dashboard" id="weather-dashboard" hidden>
+          <div class="current-weather">
+            <article class="current-summary">
+              <img
+                class="weather-icon"
+                id="current-icon"
+                alt=""
+                hidden
+              >
+
+              <div>
+                <p class="current-temperature" id="current-temperature">—</p>
+                <p class="current-condition" id="current-condition">
+                  Current forecast unavailable
+                </p>
+              </div>
+            </article>
+
+            <div class="weather-details">
+              <div class="weather-stat">
+                <span class="weather-label">Humidity</span>
+                <span class="weather-value" id="current-humidity">—</span>
+              </div>
+
+              <div class="weather-stat">
+                <span class="weather-label">Rain chance</span>
+                <span class="weather-value" id="current-rain">—</span>
+              </div>
+
+              <div class="weather-stat">
+                <span class="weather-label">Wind</span>
+                <span class="weather-value" id="current-wind">—</span>
+              </div>
+
+              <div class="weather-stat">
+                <span class="weather-label">Forecast office</span>
+                <span class="weather-value" id="forecast-office">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="alerts" id="alerts" hidden>
+            <h3>Active weather alerts</h3>
+            <div id="alert-list"></div>
+          </div>
+
+          <h3 class="forecast-heading">Seven-day daytime forecast</h3>
+
+          <div
+            class="forecast-grid"
+            id="forecast-grid"
+            aria-live="polite"
+          ></div>
+
+          <p class="weather-updated" id="weather-updated"></p>
+        </div>
       </section>
 
       <section class="section" id="project">
@@ -271,5 +569,221 @@
       </p>
     </footer>
   </div>
+
+  <script>
+    const weatherLoading = document.getElementById("weather-loading");
+    const weatherError = document.getElementById("weather-error");
+    const weatherDashboard = document.getElementById("weather-dashboard");
+
+    function displayValue(value, suffix = "") {
+      if (value === null || value === undefined || value === "") {
+        return "Not available";
+      }
+
+      return `${value}${suffix}`;
+    }
+
+    function formatDateTime(dateValue) {
+      if (!dateValue) {
+        return "Unknown";
+      }
+
+      const date = new Date(dateValue);
+
+      if (Number.isNaN(date.getTime())) {
+        return "Unknown";
+      }
+
+      return new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(date);
+    }
+
+    function buildAlertCard(alert) {
+      const article = document.createElement("article");
+      article.className = "alert-card";
+
+      const title = document.createElement("h3");
+      title.textContent = alert.event || "Weather alert";
+      article.appendChild(title);
+
+      if (alert.headline) {
+        const headline = document.createElement("p");
+        headline.textContent = alert.headline;
+        article.appendChild(headline);
+      }
+
+      if (alert.instruction) {
+        const instruction = document.createElement("p");
+        instruction.textContent = alert.instruction;
+        article.appendChild(instruction);
+      }
+
+      return article;
+    }
+
+    function buildForecastCard(period) {
+      const article = document.createElement("article");
+      article.className = "forecast-card";
+
+      const title = document.createElement("h3");
+      title.textContent = period.period_name || "Forecast";
+      article.appendChild(title);
+
+      if (period.icon_url) {
+        const image = document.createElement("img");
+        image.src = period.icon_url;
+        image.alt = period.short_forecast || "Weather forecast icon";
+        image.loading = "lazy";
+        article.appendChild(image);
+      }
+
+      const temperature = document.createElement("p");
+      temperature.className = "forecast-temperature";
+      temperature.textContent = displayValue(
+        period.temperature,
+        period.temperature_unit
+          ? `°${period.temperature_unit}`
+          : "°"
+      );
+      article.appendChild(temperature);
+
+      const condition = document.createElement("p");
+      condition.className = "forecast-condition";
+      condition.textContent =
+        period.short_forecast || "Forecast unavailable";
+      article.appendChild(condition);
+
+      if (
+        period.probability_of_precipitation !== null &&
+        period.probability_of_precipitation !== undefined
+      ) {
+        const rain = document.createElement("p");
+        rain.className = "forecast-condition";
+        rain.textContent =
+          `${period.probability_of_precipitation}% precipitation`;
+        article.appendChild(rain);
+      }
+
+      return article;
+    }
+
+    async function loadWeather() {
+      try {
+        const response = await fetch(
+          `data/weather.json?cache=${Date.now()}`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Weather request failed with status ${response.status}`
+          );
+        }
+
+        const weather = await response.json();
+        const current = weather.current_forecast;
+        const location = weather.location || {};
+
+        if (!current) {
+          throw new Error("Current forecast is missing.");
+        }
+
+        document.getElementById("current-temperature").textContent =
+          displayValue(
+            current.temperature,
+            current.temperature_unit
+              ? `°${current.temperature_unit}`
+              : "°"
+          );
+
+        document.getElementById("current-condition").textContent =
+          current.short_forecast || "Current forecast unavailable";
+
+        document.getElementById("current-humidity").textContent =
+          displayValue(current.relative_humidity, "%");
+
+        document.getElementById("current-rain").textContent =
+          displayValue(
+            current.probability_of_precipitation,
+            "%"
+          );
+
+        document.getElementById("current-wind").textContent =
+          current.wind_speed
+            ? `${current.wind_direction || ""} ${current.wind_speed}`.trim()
+            : "Not available";
+
+        document.getElementById("forecast-office").textContent =
+          location.grid_office || "NWS";
+
+        const currentIcon = document.getElementById("current-icon");
+
+        if (current.icon_url) {
+          currentIcon.src = current.icon_url;
+          currentIcon.alt =
+            current.short_forecast || "Current weather forecast";
+          currentIcon.hidden = false;
+        }
+
+        const alerts = Array.isArray(weather.active_alerts)
+          ? weather.active_alerts
+          : [];
+
+        if (alerts.length > 0) {
+          const alertSection = document.getElementById("alerts");
+          const alertList = document.getElementById("alert-list");
+
+          alertList.replaceChildren();
+
+          alerts.forEach((alert) => {
+            alertList.appendChild(buildAlertCard(alert));
+          });
+
+          alertSection.hidden = false;
+        }
+
+        const dailyForecast = Array.isArray(weather.daily_forecast)
+          ? weather.daily_forecast
+          : [];
+
+        const daytimePeriods = dailyForecast
+          .filter((period) => Boolean(period.is_daytime))
+          .slice(0, 7);
+
+        const forecastPeriods =
+          daytimePeriods.length > 0
+            ? daytimePeriods
+            : dailyForecast.slice(0, 7);
+
+        const forecastGrid = document.getElementById("forecast-grid");
+        forecastGrid.replaceChildren();
+
+        forecastPeriods.forEach((period) => {
+          forecastGrid.appendChild(buildForecastCard(period));
+        });
+
+        const sourceTime =
+          weather.last_nws_worker_run?.completed_at ||
+          weather.generated_at;
+
+        document.getElementById("weather-updated").textContent =
+          `Latest data update: ${formatDateTime(sourceTime)} · ` +
+          "Source: National Weather Service";
+
+        weatherLoading.hidden = true;
+        weatherError.hidden = true;
+        weatherDashboard.hidden = false;
+      } catch (error) {
+        console.error("Unable to load weather data:", error);
+
+        weatherLoading.hidden = true;
+        weatherDashboard.hidden = true;
+        weatherError.hidden = false;
+      }
+    }
+
+    loadWeather();
+  </script>
 </body>
 </html>
