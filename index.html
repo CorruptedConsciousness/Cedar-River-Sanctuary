@@ -296,8 +296,8 @@
 
     .forecast-grid {
       display: grid;
-      grid-template-columns: repeat(7, minmax(125px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
     }
 
     .forecast-card {
@@ -517,7 +517,7 @@
             <div id="alert-list"></div>
           </div>
 
-          <h3 class="forecast-heading">Seven-day daytime forecast</h3>
+          <h3 class="forecast-heading">Three-day daytime forecast</h3>
 
           <div
             class="forecast-grid"
@@ -749,12 +749,12 @@
 
         const daytimePeriods = dailyForecast
           .filter((period) => Boolean(period.is_daytime))
-          .slice(0, 7);
+          .slice(0, 3);
 
         const forecastPeriods =
           daytimePeriods.length > 0
             ? daytimePeriods
-            : dailyForecast.slice(0, 7);
+            : dailyForecast.slice(0, 3);
 
         const forecastGrid = document.getElementById("forecast-grid");
         forecastGrid.replaceChildren();
