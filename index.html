@@ -672,7 +672,7 @@
     async function loadWeather() {
       try {
         const response = await fetch(
-          `data/weather.json?cache=${Date.now()}`
+          "https://little-fog-0cf7cedar-river-weather.corruptedconsciousness.workers.dev/
         );
 
         if (!response.ok) {
