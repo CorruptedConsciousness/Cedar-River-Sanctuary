@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Cedar River Sanctuary</title>
+  <link
+     rel="stylesheet"
+     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""
+  >
 
   <meta
     name="description"
@@ -342,6 +348,41 @@
       font-size: 0.88rem;
     }
 
+    .radar-section {
+      margin-top: 42px;
+    }
+
+    #radar-map {
+     width: 100%;
+     height: 460px;
+     border: 1px solid var(--border);
+     border-radius: 20px;
+     overflow: hidden;
+     background: var(--panel);
+    }
+
+    .leaflet-container {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: #102018;
+    color: var(--text);
+   }
+
+   @media (max-width: 750px) {
+    #radar-map {
+      height: 360px;
+      }
+    }
+
+   @media (max-width: 450px) {
+    #radar-map {
+      height: 300px;
+      }
+    }
+
     footer {
       padding: 36px 0;
       border-top: 1px solid var(--border);
@@ -526,6 +567,23 @@
           ></div>
 
           <p class="weather-updated" id="weather-updated"></p>
+          <div class="radar-section">
+            <h3 class="forecast-heading">Regional weather radar</h3>
+
+            <div
+              id="radar-map"
+              role="img"
+              aria-label="Interactive weather radar map centered on Cedar River Sanctuary"
+            ></div>
+
+            <p class="weather-updated" id="radar-updated">
+              Loading the latest radar frame…
+            </p>
+
+            <p class="weather-updated">
+              Radar imagery provided by RainViewer · Base map © OpenStreetMap contributors
+            </p>
+          </div>
         </div>
       </section>
 
@@ -569,6 +627,12 @@
       </p>
     </footer>
   </div>
+
+  <script
+     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""
+></script>
 
   <script>
     const weatherLoading = document.getElementById("weather-loading");
@@ -668,6 +732,74 @@
 
       return article;
     }
+let radarMap = null;
+let radarLayer = null;
+
+function loadRadar(radar) {
+  const radarUpdated = document.getElementById("radar-updated");
+
+  if (!radar?.tile_template) {
+    radarUpdated.textContent = "Radar information is temporarily unavailable.";
+    return;
+  }
+
+  const latitude = radar.latitude;
+  const longitude = radar.longitude;
+
+  if (!radarMap) {
+    radarMap = L.map("radar-map", {
+      center: [latitude, longitude],
+      zoom: 7,
+      scrollWheelZoom: false,
+    });
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap contributors",
+      }
+    ).addTo(radarMap);
+
+    L.circleMarker([latitude, longitude], {
+      radius: 9,
+      color: "#ffffff",
+      weight: 3,
+      fillColor: "#2f80ed",
+      fillOpacity: 1,
+     })
+      .addTo(radarMap)
+      .bindPopup(
+        "<strong>Cedar River Sanctuary</strong><br>Buckeye Township, Michigan"
+       );
+
+    L.control.scale({
+      imperial: true,
+      metric: false,
+    }).addTo(radarMap);
+  }
+
+  if (radarLayer) {
+    radarMap.removeLayer(radarLayer);
+  }
+
+  radarLayer = L.tileLayer(radar.tile_template, {
+    opacity: 0.72,
+    maxZoom: 18,
+    attribution: "Radar © RainViewer",
+  }).addTo(radarMap);
+
+  const frameTime = radar.frame_time
+    ? formatDateTime(radar.frame_time)
+    : "Unknown";
+
+  radarUpdated.textContent =
+    `Latest radar frame: ${frameTime}`;
+
+  setTimeout(() => {
+    radarMap.invalidateSize();
+  }, 100);
+}
 
     async function loadWeather() {
       try {
@@ -682,6 +814,12 @@
         }
 
         const weather = await response.json();
+        
+        console.log(weather);
+        console.log(weather.radar);
+
+        loadRadar(weather.radar);
+       
         const current = weather.current_forecast;
         const location = weather.location || {};
 
