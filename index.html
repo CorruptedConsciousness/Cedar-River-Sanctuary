@@ -869,20 +869,24 @@ function loadRadar(radar) {
           : [];
 
         if (alerts.length > 0) {
+          const alerts = Array.isArray(weather.active_alerts)
+            ? weather.active_alerts
+            : [];
+
           const alertSection = document.getElementById("alerts");
           const alertList = document.getElementById("alert-list");
 
           alertList.replaceChildren();
 
           if (alerts.length > 0) {
-              alerts.forEach((alert) => {
-                  alertList.appendChild(buildAlertCard(alert));
-              });
+            alerts.forEach((alert) => {
+              alertList.appendChild(buildAlertCard(alert));
+            });
 
-              alertSection.hidden = false;
-          } else {
-              alertSection.hidden = true;
-          }
+           alertSection.hidden = false;
+        } else {
+          alertSection.hidden = true;
+        }
         const dailyForecast = Array.isArray(weather.daily_forecast)
           ? weather.daily_forecast
           : [];
