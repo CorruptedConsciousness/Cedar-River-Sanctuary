@@ -874,13 +874,15 @@ function loadRadar(radar) {
 
           alertList.replaceChildren();
 
-          alerts.forEach((alert) => {
-            alertList.appendChild(buildAlertCard(alert));
-          });
+          if (alerts.length > 0) {
+              alerts.forEach((alert) => {
+                  alertList.appendChild(buildAlertCard(alert));
+              });
 
-          alertSection.hidden = false;
-        }
-
+              alertSection.hidden = false;
+          } else {
+              alertSection.hidden = true;
+          }
         const dailyForecast = Array.isArray(weather.daily_forecast)
           ? weather.daily_forecast
           : [];
