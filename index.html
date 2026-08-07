@@ -446,6 +446,133 @@
         grid-template-columns: 1fr;
       }
     }
+       .aqi-card {
+           margin-top: 24px;
+           padding: 28px;
+           border-radius: 20px;
+           background: var(--panel);
+           border: 1px solid var(--border);
+
+           display: grid;
+           grid-template-columns: 1.2fr 1fr;
+           gap: 32px;
+           align-items: center;
+          }
+
+.aqi-main {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.aqi-number {
+  font-size: clamp(4rem, 7vw, 6rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.aqi-category {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.aqi-label {
+  color: var(--muted);
+}
+
+.aqi-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.aqi-details > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aqi-pollutants {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.aqi-pollutant-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+.aqi-pollutant-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.section-description {
+  max-width: 720px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* AQI category colors */
+
+.aqi-good {
+  background: #2e7d32;
+  color: white;
+}
+
+.aqi-moderate {
+  background: #f9a825;
+  color: #111;
+}
+
+.aqi-sensitive {
+  background: #ef6c00;
+  color: white;
+}
+
+.aqi-unhealthy {
+  background: #c62828;
+  color: white;
+}
+
+.aqi-very-unhealthy {
+  background: #6a1b9a;
+  color: white;
+}
+
+.aqi-hazardous {
+  background: #6d1b1b;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .aqi-card {
+    grid-template-columns: 1fr;
+  }
+
+  .aqi-details {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .aqi-pollutants {
+    grid-template-columns: 1fr;
+  }
+
+  .aqi-number {
+    font-size: 4rem;
+  }
+    }
   </style>
 </head>
 
@@ -586,7 +713,39 @@
           </div>
         </div>
       </section>
+      <section class="section" id="air-quality">
+  <div class="eyebrow">REGIONAL CONTEXT</div>
+  <h2>Air quality</h2>
+  <p class="section-description">
+  Current regional air quality based on the nearest AirNow monitoring area.
+</p>
 
+  <div class="aqi-card" id="aqi-card">
+    <div class="aqi-main">
+      <div class="aqi-number" id="aqi-value">--</div>
+      <div>
+        <div class="aqi-category" id="aqi-category">Loading...</div>
+        <div class="aqi-label">Air Quality Index</div>
+      </div>
+    </div>
+
+    <div class="aqi-details">
+      <div>
+        <span class="weather-label">Primary pollutant</span>
+        <span class="weather-value" id="aqi-pollutant">--</span>
+      </div>
+
+      <div>
+        <span class="weather-label">Reporting area</span>
+        <span class="weather-value" id="aqi-area">--</span>
+      </div>
+    </div>
+    <div class="aqi-pollutants" id="aqi-pollutants"></div>
+  </div>
+
+
+  <p class="weather-updated" id="aqi-updated"></p>
+</section>
       <section class="section" id="project">
         <h2>The project</h2>
 
@@ -814,6 +973,69 @@ function loadRadar(radar) {
         }
 
         const weather = await response.json();
+
+        const airQuality = weather.air_quality;
+
+if (airQuality) {
+  document.getElementById("aqi-value").textContent =
+    airQuality.aqi ?? "--";
+
+  document.getElementById("aqi-category").textContent =
+    airQuality.category ?? "Unknown";
+  const categoryElement =
+    document.getElementById("aqi-category");
+
+categoryElement.className = "aqi-category";
+
+const category =
+  (airQuality.category ?? "").toLowerCase();
+
+if (category === "good") {
+  categoryElement.classList.add("aqi-good");
+} else if (category === "moderate") {
+  categoryElement.classList.add("aqi-moderate");
+} else if (category.includes("sensitive")) {
+  categoryElement.classList.add("aqi-sensitive");
+} else if (category === "unhealthy") {
+  categoryElement.classList.add("aqi-unhealthy");
+} else if (category.includes("very unhealthy")) {
+  categoryElement.classList.add("aqi-very-unhealthy");
+} else if (category === "hazardous") {
+  categoryElement.classList.add("aqi-hazardous");
+}
+
+  document.getElementById("aqi-pollutant").textContent =
+    airQuality.primary_pollutant ?? "--";
+
+  document.getElementById("aqi-area").textContent =
+    airQuality.reporting_area
+      ? `${airQuality.reporting_area}, ${airQuality.state_code ?? ""}`
+      : "--";
+
+  const pollutantGrid =
+    document.getElementById("aqi-pollutants");
+
+  pollutantGrid.replaceChildren();
+
+  (airQuality.observations || []).forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "aqi-pollutant-card";
+
+    const name = document.createElement("strong");
+    name.textContent = item.pollutant ?? "Pollutant";
+
+    const value = document.createElement("div");
+    value.textContent =
+      `${item.aqi ?? "--"} · ${item.category ?? "Unknown"}`;
+
+    card.appendChild(name);
+    card.appendChild(value);
+    pollutantGrid.appendChild(card);
+  });
+
+  document.getElementById("aqi-updated").textContent =
+    `Regional observation: ${airQuality.reporting_area ?? "AirNow"} · Source: AirNow`;
+}
         
         console.log(weather);
         console.log(weather.radar);
